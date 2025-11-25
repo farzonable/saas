@@ -17,27 +17,21 @@ class Visit(BaseModel):
 
 
 system_prompt = """
-You are provided with notes captured during a short demo or first contact with a potential lead.
-Your job is to turn these notes into a clean summary for internal use and generate a concise outreach email for the lead.
-
+You are provided with notes written by a doctor from a patient's visit.
+Your job is to summarize the visit for the doctor and provide an email.
 Reply with exactly three sections with the headings:
-### Summary of call for internal records
-### Next steps for the team
-### Draft of email to lead in friendly, concise language
+### Summary of visit for the doctor's records
+### Next steps for the doctor
+### Draft of email to patient in patient-friendly language
 """
-
 
 
 def user_prompt_for(visit: Visit) -> str:
-    return f"""Create the summary, next steps, and draft email for:
-
-Lead Name: {visit.patient_name}
-Date of Contact: {visit.date_of_visit}
-
+    return f"""Create the summary, next steps and draft email for:
+Patient Name: {visit.patient_name}
+Date of Visit: {visit.date_of_visit}
 Notes:
-{visit.notes}
-"""
-
+{visit.notes}"""
 
 
 @app.post("/api")

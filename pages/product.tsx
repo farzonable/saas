@@ -1,4 +1,4 @@
-"use client";
+"use client"
 
 import { useState, FormEvent } from 'react';
 import { useAuth } from '@clerk/nextjs';
@@ -9,12 +9,12 @@ import remarkBreaks from 'remark-breaks';
 import { fetchEventSource } from '@microsoft/fetch-event-source';
 import { Protect, PricingTable, UserButton } from '@clerk/nextjs';
 
-function LeadSummaryForm() {
+function ConsultationForm() {
     const { getToken } = useAuth();
 
     // Form state
-    const [leadName, setLeadName] = useState('');
-    const [contactDate, setContactDate] = useState<Date | null>(new Date());
+    const [patientName, setPatientName] = useState('');
+    const [visitDate, setVisitDate] = useState<Date | null>(new Date());
     const [notes, setNotes] = useState('');
 
     // Streaming state
@@ -36,7 +36,7 @@ function LeadSummaryForm() {
         const controller = new AbortController();
         let buffer = '';
 
-        await fetchEventSource('/api/lead-summary', {
+        await fetchEventSource('/api/consultation', {
             signal: controller.signal,
             method: 'POST',
             headers: {
@@ -44,16 +44,16 @@ function LeadSummaryForm() {
                 Authorization: `Bearer ${jwt}`,
             },
             body: JSON.stringify({
-                lead_name: leadName,
-                date_of_contact: contactDate?.toISOString().slice(0, 10),
+                patient_name: patientName,
+                date_of_visit: visitDate?.toISOString().slice(0, 10),
                 notes,
             }),
             onmessage(ev) {
                 buffer += ev.data;
                 setOutput(buffer);
             },
-            onclose() {
-                setLoading(false);
+            onclose() { 
+                setLoading(false); 
             },
             onerror(err) {
                 console.error('SSE error:', err);
@@ -66,33 +66,33 @@ function LeadSummaryForm() {
     return (
         <div className="container mx-auto px-4 py-12 max-w-3xl">
             <h1 className="text-4xl font-bold text-gray-900 dark:text-gray-100 mb-8">
-                Lead Summary Generator
+                Consultation Notes
             </h1>
 
             <form onSubmit={handleSubmit} className="space-y-6 bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8">
                 <div className="space-y-2">
-                    <label htmlFor="lead" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                        Lead Name
+                    <label htmlFor="patient" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                        Patient Name
                     </label>
                     <input
-                        id="lead"
+                        id="patient"
                         type="text"
                         required
-                        value={leadName}
-                        onChange={(e) => setLeadName(e.target.value)}
+                        value={patientName}
+                        onChange={(e) => setPatientName(e.target.value)}
                         className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
-                        placeholder="Enter lead's full name"
+                        placeholder="Enter patient's full name"
                     />
                 </div>
 
                 <div className="space-y-2">
                     <label htmlFor="date" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                        Date of Contact
+                        Date of Visit
                     </label>
                     <DatePicker
                         id="date"
-                        selected={contactDate}
-                        onChange={(d: Date | null) => setContactDate(d)}
+                        selected={visitDate}
+                        onChange={(d: Date | null) => setVisitDate(d)}
                         dateFormat="yyyy-MM-dd"
                         placeholderText="Select date"
                         required
@@ -102,7 +102,7 @@ function LeadSummaryForm() {
 
                 <div className="space-y-2">
                     <label htmlFor="notes" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                        Notes From Call / Demo
+                        Consultation Notes
                     </label>
                     <textarea
                         id="notes"
@@ -111,12 +111,12 @@ function LeadSummaryForm() {
                         value={notes}
                         onChange={(e) => setNotes(e.target.value)}
                         className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
-                        placeholder="Enter notes from your conversation..."
+                        placeholder="Enter detailed consultation notes..."
                     />
                 </div>
 
-                <button
-                    type="submit"
+                <button 
+                    type="submit" 
                     disabled={loading}
                     className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white font-semibold py-3 px-6 rounded-lg transition-colors duration-200"
                 >
@@ -152,10 +152,10 @@ export default function Product() {
                     <div className="container mx-auto px-4 py-12">
                         <header className="text-center mb-12">
                             <h1 className="text-5xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent mb-4">
-                                Sales Professional Plan
+                                Healthcare Professional Plan
                             </h1>
                             <p className="text-gray-600 dark:text-gray-400 text-lg mb-8">
-                                Create instant lead summaries & outreach emails
+                                Streamline your patient consultations with AI-powered summaries
                             </p>
                         </header>
                         <div className="max-w-4xl mx-auto">
@@ -164,7 +164,7 @@ export default function Product() {
                     </div>
                 }
             >
-                <LeadSummaryForm />
+                <ConsultationForm />
             </Protect>
         </main>
     );
